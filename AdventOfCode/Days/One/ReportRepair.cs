@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 
@@ -8,45 +9,40 @@ namespace AdventOfCode.Days.One
     {
         public static int Answer(Enum part)
         {
-            switch (part)
+            return part switch
             {
-                case Part.One:
-                    return PartOne();
-                case Part.Two:
-                     return PartTwo();
-                default:
-                    return 0;
-            }
+                Part.One => PartOne(),
+                Part.Two => PartTwo(),
+                _ => 0
+            };
         }
 
         private static int PartOne()
         {
             var filepath = Path.Combine(Directory.GetCurrentDirectory(), @"Days\One\input.txt");
-            var report = File.ReadAllLines(filepath).ToList().Select(int.Parse).ToArray();
+            var report = File.ReadAllLines(filepath).ToList().Select(int.Parse).ToList();
 
             const int targetValue = 2020;
 
-            for (var i = 0; i < report.Length - 1; i++)
+            report.Sort();
+
+            var i = 0;
+            var j = report.Count - 1;
+
+            while (true)
             {
-                for (var j = 0; j < report.Length - 1; j++)
+                if (report[i] + report[j] == targetValue)
                 {
-                    if (i == j)
-                    {
-                        continue;
-                    }
-
-                    var firstTerm = report[i];
-                    var secondTerm = report[j];
-
-                    if (firstTerm + secondTerm == targetValue)
-                    {
-                        return firstTerm * secondTerm;
-                    }
-
+                    return report[i] * report[j];
+                }
+                else if (report[i] + report[j] > targetValue)
+                {
+                    j--;
+                } else if (report[i] + report[j] < targetValue)
+                {
+                    i++;
                 }
             }
-
-            return 0;
         }
 
         private static int PartTwo()
@@ -72,13 +68,9 @@ namespace AdventOfCode.Days.One
                             continue;
                         }
 
-                        var firstTerm = report[i];
-                        var secondTerm = report[j];
-                        var thirdTerm = report[k];
-
-                        if (firstTerm + secondTerm + thirdTerm == targetValue)
+                        if (report[i] + report[j] + report[k] == targetValue)
                         {
-                            return firstTerm * secondTerm * thirdTerm;
+                            return report[i] * report[j] * report[k];
                         }
                     }
                 }
